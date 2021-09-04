@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Browse from "./components/Browse";
 import Wallet from "./components/Wallet";
+import Token from "./components/Token";
 
 function App() {
   const Root = (props) => (
@@ -37,7 +38,7 @@ function App() {
     <Router>
       <Root>
         <Sidebar>
-          <h3>SKELLY SWAP</h3>
+          <h3>NFT MARKETPLACE</h3>
           <div>Browse</div>
           <div>My NFTs</div>
         </Sidebar>
@@ -48,6 +49,9 @@ function App() {
             </Route>
             <Route path="/wallet/:address">
               <Wallet></Wallet>
+            </Route>
+            <Route path="/collection/:collectionAddress/:tokenId">
+              <Token></Token>
             </Route>
           </Switch>
         </Main>
