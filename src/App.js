@@ -4,18 +4,17 @@ import {
   Switch,
   Route,
   Link,
-  Redirect
-} from "react-router-dom";
+  Redirect,
+} from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import Browse from "./components/Browse";
-import Wallet from "./components/Wallet";
-import Token from "./components/Token";
+import Browse from './components/Browse';
+import Wallet from './components/Wallet';
+import Token from './components/Token';
 import { ethers } from 'ethers';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { NETWORK } from "./config"
+import { NETWORK } from './config';
 
 function App() {
-
   // Provider, signer, and address
   const [provider, setProvider] = useState();
   const [signer, setSigner] = useState();
@@ -29,23 +28,25 @@ function App() {
   const connectMetamask = async () => {
     if (provider) {
       try {
-        let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        let accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts',
+        });
         setAddress(accounts[0]);
         setSigner(provider.getSigner());
       } catch {
-        console.log("User rejected connection request.")
+        console.log('User rejected connection request.');
       }
     }
-  }
+  };
 
   // On initial load, set the provider. If already connected, set address and signer as well.
   useEffect(() => {
     async function getProvider() {
       if (await detectEthereumProvider()) {
         setMetamaskInstalled(true);
-        let p = new ethers.providers.Web3Provider(window.ethereum, "any");
+        let p = new ethers.providers.Web3Provider(window.ethereum, 'any');
         // Listen for chain changes
-        p.on("network", (newNetwork, oldNetwork) => {
+        p.on('network', (newNetwork, oldNetwork) => {
           // When a Provider makes its initial connection, it emits a "network"
           // event with a null oldNetwork along with the newNetwork. So, if the
           // oldNetwork exists, it represents a changing network
@@ -65,8 +66,8 @@ function App() {
         }
         setProvider(p);
         // Listen for account changes
-        window.ethereum.on("accountsChanged", (accounts) => {
-          console.log("Accounts changed", accounts[0]);
+        window.ethereum.on('accountsChanged', (accounts) => {
+          console.log('Accounts changed', accounts[0]);
           setAddress(accounts[0]);
         });
       }
@@ -75,27 +76,36 @@ function App() {
   }, []);
 
   const Root = (props) => (
-    <div style={{
-      display: 'flex'
-    }} {...props}/>
-  )
+    <div
+      style={{
+        display: 'flex',
+      }}
+      {...props}
+    />
+  );
 
   const Sidebar = (props) => (
-    <div style={{
-      width: '250px',
-      height: '100vh',
-      overflow: 'auto',
-      borderStyle: 'groove'
-    }} {...props} />
-  )
+    <div
+      style={{
+        width: '250px',
+        height: '100vh',
+        overflow: 'auto',
+        borderStyle: 'groove',
+      }}
+      {...props}
+    />
+  );
 
   const Main = (props) => (
-    <div style={{
-      flex: 1,
-      height: '100vh',
-      overflow: 'auto'
-    }} {...props} />
-  )
+    <div
+      style={{
+        flex: 1,
+        height: '100vh',
+        overflow: 'auto',
+      }}
+      {...props}
+    />
+  );
 
   return (
     <Router>
@@ -106,27 +116,36 @@ function App() {
           <div>My NFTs</div>
         </Sidebar>
         <Main>
-          {wrongChain ? <h1>Wrong Chain - switch to FTM 250</h1> :
+          {wrongChain ? (
+            <h1>Wrong Chain - switch to FTM 250</h1>
+          ) : (
             <>
-              <div align="right">
-                {address
-                  ? <button>{NETWORK.name + ": " + address.slice(0, 6) + "..." + address.slice(38)}</button>
-                  : <button onClick={connectMetamask}>Connect</button>
-                }
+              <div align='right'>
+                {address ? (
+                  <button>
+                    {NETWORK.name +
+                      ': ' +
+                      address.slice(0, 6) +
+                      '...' +
+                      address.slice(38)}
+                  </button>
+                ) : (
+                  <button onClick={connectMetamask}>Connect</button>
+                )}
               </div>
               <Switch>
-                <Route exact path="/">
+                <Route exact path='/'>
                   <Browse></Browse>
                 </Route>
-                <Route path="/wallet/:address">
+                <Route path='/wallet/:address'>
                   <Wallet></Wallet>
                 </Route>
-                <Route path="/collection/:collectionAddress/:tokenId">
-                  <Token></Token>
+                <Route path='/collection/:collectionAddress/:tokenId'>
+                  {provider && <Token provider={provider} />}
                 </Route>
               </Switch>
             </>
-          }
+          )}
         </Main>
       </Root>
     </Router>
