@@ -13,6 +13,25 @@ import { ethers } from 'ethers';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { NETWORK } from './config';
 
+const COLLECTIONS = [
+  {
+    name: "Baby Boo",
+    address: "0xf6a4dc2c70e45a43c85151c4afa89f3ea9c463fd"
+  },
+  {
+    name: "Fantums",
+    address: "0x0c600d41b9c7656e60c0bf76d79b1532b4770d0c"
+  },
+  {
+    name: "Strange Brew",
+    address: "0x9044948e1a934340766c16f094cc32205d60d1b2"
+  },
+  {
+    name: "Shiba Punks",
+    address: "0x28908d5795b4d8f4cc175c63523f974412f2a5b1"
+  }
+]
+
 function App() {
   // Provider, signer, and address
   const [provider, setProvider] = useState();
@@ -116,8 +135,13 @@ function App() {
           <div><a href="#/">Browse</a></div>
           <div><a href={"#/wallet/" + address}>My NFTs</a></div>
           <h3>Collections</h3>
-          <div>Baby Boo</div>
-          <div>Fantums</div>
+          {COLLECTIONS.map((x) =>
+            <div>
+              <a href={"#/collection/" + x.address}>
+                {x.name}
+              </a>
+            </div>
+          )}
         </Sidebar>
         <Main>
           {wrongChain ? (
