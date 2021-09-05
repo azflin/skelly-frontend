@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import Browse from './components/Browse';
 import Wallet from './components/Wallet';
 import Token from './components/Token';
+import Collection from "./components/Collection";
 import { ethers } from 'ethers';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { NETWORK } from './config';
@@ -21,6 +22,7 @@ function App() {
   // Various loading, status etc variables
   const [metamaskInstalled, setMetamaskInstalled] = useState(false);
   const [wrongChain, setWrongChain] = useState(false);
+  const [ready, setReady] = useState();
 
   // Function to request metamask connection. This sets signer.
   const connectMetamask = async () => {
@@ -68,6 +70,7 @@ function App() {
           console.log('Accounts changed', accounts[0]);
           setAddress(accounts[0]);
         });
+        setReady(true);
       }
     }
     getProvider();
@@ -112,6 +115,9 @@ function App() {
           <h3>NFT MARKETPLACE</h3>
           <div><a href="#/">Browse</a></div>
           <div><a href={"#/wallet/" + address}>My NFTs</a></div>
+          <h3>Collections</h3>
+          <div>Baby Boo</div>
+          <div>Fantums</div>
         </Sidebar>
         <Main>
           {wrongChain ? (
@@ -133,13 +139,16 @@ function App() {
               </div>
               <Switch>
                 <Route exact path='/'>
-                  <Browse></Browse>
+                  {ready && <Browse></Browse>}
                 </Route>
                 <Route path='/wallet/:address'>
-                  <Wallet></Wallet>
+                  {ready && <Wallet></Wallet>}
                 </Route>
                 <Route path='/collection/:collectionAddress/:tokenId'>
-                  {provider && <Token provider={provider} />}
+                  {ready && <Token provider={provider} />}
+                </Route>
+                <Route path='/collection/:contract'>
+                  {ready && <Collection></Collection>}
                 </Route>
               </Switch>
             </>

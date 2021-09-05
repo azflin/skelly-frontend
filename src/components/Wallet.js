@@ -10,7 +10,7 @@ export default function Wallet() {
     async function fetchWallet() {
       console.log("Wallet useEffect");
       const response = await fetch(
-        `https://api.paintswap.finance/userNFTs/${address}?allowNSFW=true&numToFetch=100&numToSkip=0`,
+        `https://api.paintswap.finance/userNFTs/${address}?allowNSFW=true&numToFetch=150&numToSkip=0`,
       );
       const data = await response.json();
       setNfts(data.nfts);
