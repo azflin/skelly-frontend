@@ -139,7 +139,7 @@ function App() {
           <div><a href={"#/wallet/" + address}>My NFTs</a></div>
           <h3>Collections</h3>
           {COLLECTIONS.map((x) =>
-            <div>
+            <div key={x.address}>
               <a href={"#/collection/" + x.address}>
                 {x.name}
               </a>
