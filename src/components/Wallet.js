@@ -2,17 +2,20 @@ import React, {useEffect, useState} from 'react';
 import { useParams } from "react-router-dom";
 import {NETWORK} from "../config";
 
-export default React.memo(function Wallet() {
+export default function Wallet() {
   const { address } = useParams();
   const [nfts, setNfts] = useState();
 
-  useEffect(async () => {
-    console.log("Wallet useEffect");
-    const response = await fetch(
-      `https://api.paintswap.finance/userNFTs/${address}?allowNSFW=true&numToFetch=100&numToSkip=0`,
-    );
-    const data = await response.json();
-    setNfts(data.nfts);
+  useEffect( () => {
+    async function fetchWallet() {
+      console.log("Wallet useEffect");
+      const response = await fetch(
+        `https://api.paintswap.finance/userNFTs/${address}?allowNSFW=true&numToFetch=100&numToSkip=0`,
+      );
+      const data = await response.json();
+      setNfts(data.nfts);
+    }
+    fetchWallet();
   }, [address]);
 
   return (
@@ -50,4 +53,4 @@ export default React.memo(function Wallet() {
       </table>
     </div>
   )
-});
+};
