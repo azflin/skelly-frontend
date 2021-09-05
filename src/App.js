@@ -10,6 +10,7 @@ import Wallet from './components/Wallet';
 import Token from './components/Token';
 import Collection from "./components/Collection";
 import { ethers } from 'ethers';
+import styled from "styled-components";
 import detectEthereumProvider from '@metamask/detect-provider';
 import { NETWORK } from './config';
 
@@ -30,7 +31,24 @@ const COLLECTIONS = [
     name: "Shiba Punks",
     address: "0x28908d5795b4d8f4cc175c63523f974412f2a5b1"
   }
-]
+];
+const SidebarDiv = styled.div`
+  width: 220px;
+  height: 100vh;
+  overflow: auto;
+  border-right: 5px ridge #b6d4fe;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background-color: #b6d4fe;
+  padding: 0px 15px;
+`
+const MainDiv = styled.div`
+  flex: 1;
+  height: 100vh;
+  overflow: auto;
+  padding: 0px 15px;
+  background-color: floralwhite;
+`
 
 function App() {
   // Provider, signer, and address
@@ -105,33 +123,18 @@ function App() {
   );
 
   const Sidebar = (props) => (
-    <div
-      style={{
-        width: '250px',
-        height: '100vh',
-        overflow: 'auto',
-        borderStyle: 'groove',
-      }}
-      {...props}
-    />
+    <SidebarDiv {...props}/>
   );
 
   const Main = (props) => (
-    <div
-      style={{
-        flex: 1,
-        height: '100vh',
-        overflow: 'auto',
-      }}
-      {...props}
-    />
+    <MainDiv {...props}/>
   );
 
   return (
     <Router>
       <Root>
         <Sidebar>
-          <h3>NFT MARKETPLACE</h3>
+          <h2 style={{textAlign: "center"}}>Skelly 💀</h2>
           <div><a href="#/">Browse</a></div>
           <div><a href={"#/wallet/" + address}>My NFTs</a></div>
           <h3>Collections</h3>
