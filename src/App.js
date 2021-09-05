@@ -112,8 +112,8 @@ function App() {
       <Root>
         <Sidebar>
           <h3>NFT MARKETPLACE</h3>
-          <div>Browse</div>
-          <div>My NFTs</div>
+          <div><a href="#/">Browse</a></div>
+          <div><a href={"#/wallet/" + address}>My NFTs</a></div>
         </Sidebar>
         <Main>
           {wrongChain ? (

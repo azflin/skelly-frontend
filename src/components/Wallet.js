@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { useParams } from "react-router-dom";
+import {NETWORK} from "../config";
 
 export default React.memo(function Wallet() {
   const { address } = useParams();
@@ -22,13 +23,25 @@ export default React.memo(function Wallet() {
           <th>ERC721 Contract</th>
           <th>tokenId</th>
           <th>tokenURI</th>
+          <th>View</th>
         </thead>
         <tbody>
-          {nfts.map((nft) =>
+          {nfts && nfts.map((nft) =>
             <tr>
-              <td>{nft.address}</td>
+              <td>
+                <a href={NETWORK.block_explorer_url + "address/" + nft.address} target="_blank">
+                  {nft.address}
+                </a>
+              </td>
               <td>{nft.nft.tokenId}</td>
-              <td>{nft.nft.uri}</td>
+              <td>
+                <a href={nft.nft.uri}>{nft.nft.uri}</a>
+              </td>
+              <td>
+                <a href={"#/collection/" + nft.address + "/" + nft.nft.tokenId}>
+                  <button>Go</button>
+                </a>
+              </td>
             </tr>
           )}
         </tbody>
