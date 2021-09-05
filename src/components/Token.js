@@ -5,7 +5,6 @@ import collectionABI from '../collectionABI';
 
 export default function Token({ provider }) {
   const { collectionAddress, tokenId } = useParams();
-  // const [uri, setURI] = useState();
   const [data, setData] = useState();
   const [name, setName] = useState();
 
@@ -23,7 +22,8 @@ export default function Token({ provider }) {
       let response = await fetch(uri);
 
       if (response.ok) {
-        setData(await response.json());
+        let data = await response.json();
+        setData(data);
         setName(name);
       } else {
         console.log('HTTP-Error: ' + response.status);
@@ -32,18 +32,15 @@ export default function Token({ provider }) {
 
     fetchAPI();
   }, []);
+
   return (
     <div style={{ marginLeft: '5rem' }}>
       {name && <h1>{name}</h1>}
-      <img src={data && data.image} />
-      {data && <h1>{data.name}</h1>}
-      {data && (
-        <text>
-          ID: {data.id} of {data.totalFantums}
-        </text>
-      )}
-      <br />
-      {data && <text>Description: {data.description}</text>}
+      <img style={{ maxWidth: '22rem' }} src={data && data.image} />
+      {data &&
+        Object.entries(data).map((prop, value) => {
+          <p>{`${prop}: ${value}`}</p>;
+        })}
     </div>
   );
 }
