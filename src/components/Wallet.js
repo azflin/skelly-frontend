@@ -20,14 +20,16 @@ export default React.memo(function Wallet() {
       <h1>{ address.slice(0, 6) + "..." + address.slice(address.length - 4, address.length) }'s NFTs</h1>
       <table>
         <thead>
-          <th>ERC721 Contract</th>
-          <th>tokenId</th>
-          <th>tokenURI</th>
-          <th>View</th>
+          <tr>
+            <th>ERC721 Contract</th>
+            <th>tokenId</th>
+            <th>tokenURI</th>
+            <th>View</th>
+          </tr>
         </thead>
         <tbody>
           {nfts && nfts.map((nft) =>
-            <tr>
+            <tr key={nft.id}>
               <td>
                 <a href={NETWORK.block_explorer_url + "address/" + nft.address} target="_blank">
                   {nft.address}
