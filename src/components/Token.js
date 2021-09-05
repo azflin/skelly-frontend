@@ -23,6 +23,7 @@ export default function Token({ provider }) {
 
       if (response.ok) {
         let data = await response.json();
+        console.log("data", data);
         setData(data);
         setName(name);
       } else {
@@ -38,9 +39,9 @@ export default function Token({ provider }) {
       {name && <h1>{name}</h1>}
       <img style={{ maxWidth: '22rem' }} src={data && data.image} />
       {data &&
-        Object.entries(data).map((prop, value) => {
-          <p>{`${prop}: ${value}`}</p>;
-        })}
+      Object.keys(data).map((key) =>
+        <p key={key}>{key}: {JSON.stringify(data[key])}</p>
+      )}
     </div>
   );
 }
