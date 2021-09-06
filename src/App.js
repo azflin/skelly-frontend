@@ -172,7 +172,7 @@ function App() {
                   {ready && <Wallet></Wallet>}
                 </Route>
                 <Route path='/collection/:collectionAddress/:tokenId'>
-                  {ready && <Token provider={provider} />}
+                  {ready && <Token provider={provider} signer={signer} />}
                 </Route>
                 <Route path='/collection/:contract'>
                   {ready && <Collection></Collection>}

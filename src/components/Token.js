@@ -4,40 +4,45 @@ import { ethers } from 'ethers';
 import collectionABI from '../abis/collectionABI';
 import {NETWORK} from "../config";
 
-export default function Token({ provider }) {
+export default function Token({ provider, signer }) {
   const { collectionAddress, tokenId } = useParams();
+
   const [metadata, setMetadata] = useState();
   const [name, setName] = useState();
   const [owner, setOwner] = useState();
+  const [isOwner, setIsOwner] = useState();
+  const [salePrice, setSalePrice] = useState();
 
+  // Fetch contract details and tokenURI json when collectionAddress or tokenID
+  // change
   useEffect(() => {
     async function fetchAPI() {
       console.log("UseEffect", collectionAddress, tokenId);
+      console.log("signer", signer);
       let contract = await new ethers.Contract(
         collectionAddress,
         collectionABI,
         provider
       );
 
-      let uri = await contract.tokenURI(tokenId);
-      console.log("URI", uri);
-      let name = await contract.name();
-      console.log("name", name);
-      let owner = await contract.ownerOf(tokenId);
-      console.log("owner", owner);
-      setOwner(owner);
+      setName(await contract.name());
+      let ownerLocal = await contract.ownerOf(tokenId)
+      setOwner(ownerLocal);
+      let address = await signer.getAddress();
+      if (address == ownerLocal) {
+        setIsOwner(true);
+      }
 
+      let uri = await contract.tokenURI(tokenId);
       let response = await fetch(uri);
 
       if (response.ok) {
         let data = await response.json();
         setMetadata(data);
-        setName(name);
       } else {
         console.log('HTTP-Error: ' + response.status);
       }
     }
-
     fetchAPI();
   }, [collectionAddress, tokenId]);
 
@@ -56,8 +61,15 @@ export default function Token({ provider }) {
           <div>
             <b>Token ID:</b> {tokenId}
           </div>
+          {isOwner &&
+            <div style={{display: "flex"}}>
+              <input type="number" value={salePrice} onChange={e => setSalePrice(e.target.value)} />
+              <button>List for Sale</button>
+            </div>
+          }
         </div>
       </div>
+      {/* NFT Metadata */}
       <div>
         {metadata &&
           Object.keys(metadata).map((key) => {
