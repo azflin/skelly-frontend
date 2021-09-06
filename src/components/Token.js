@@ -290,6 +290,40 @@ export default function Token({ provider, signer }) {
     }
   }
 
+  const acceptBid = async () => {
+    if (!signer) {
+      alert("Connect to metamask!");
+    } else {
+      let txResponse;
+      try {
+        txResponse = await marketplaceContract.takeBid(collectionAddress, tokenId);
+      } catch (error) {
+        setTxStatus("error");
+        setErrorMessage(
+          (error.data && error.data.message)
+            ? error.message + " " + error.data.message
+            : error.message);
+        return;
+      }
+      setTxHash(txResponse.hash);
+      setTxStatus("processing");
+      try {
+        await txResponse.wait();
+        setTxStatus("success");
+        await refreshBidAsk();
+        setOwner(await signer.getAddress());
+      } catch (error) {
+        console.log("ERROR", error);
+        setErrorMessage(
+          (error.data && error.data.message)
+            ? error.message + " " + error.data.message
+            : error.message);
+        setTxStatus("error")
+        return;
+      }
+    }
+  }
+
   // Approve your NFT for sale
   const approveForSale = async () => {
     if (signer) {
@@ -416,6 +450,10 @@ export default function Token({ provider, signer }) {
                   }
                 </div>
               </div>
+          }
+          {/* Accept bid if owner */}
+          {(signerAddress === owner && bid && bid.price) ?
+            <button onClick={acceptBid}>Accept Bid</button> : ""
           }
           {/* Current offer information */}
           {offer && offer.price ?
