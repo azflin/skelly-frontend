@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom';
 import { ethers } from 'ethers';
 import collectionABI from '../abis/collectionABI';
 import marketplaceABI from '../abis/marketplaceABI';
-import { NETWORK, MARKETPLACE_CONTRACT } from "../config";
+import wethABI from "../abis/wethABI";
+import { NETWORK, MARKETPLACE_CONTRACT, WETH_CONTRACT } from "../config";
 import {Status} from "./Status";
 import styled from "styled-components";
 
@@ -34,7 +35,6 @@ export default function Token({ provider, signer }) {
   const [metadata, setMetadata] = useState();
   const [name, setName] = useState();
   const [owner, setOwner] = useState();
-  // const [isOwner, setIsOwner] = useState();
   const [signerAddress, setSignerAddress] = useState();
   const [salePriceInput, setSalePriceInput] = useState("");
   const [marketplaceContract, setMarketplaceContract] = useState();
@@ -44,6 +44,7 @@ export default function Token({ provider, signer }) {
   const [bid, setBid] = useState();
   const [offer, setOffer] = useState();
   const [userApprovedNftTransfer, setUserApprovedNftTransfer] = useState();
+  const [userApprovedWeth, setUserApprovedWeth] = useState();
 
   // Fetch ERC721 contract details and tokenURI json when collectionAddress or tokenID
   // change
@@ -112,6 +113,28 @@ export default function Token({ provider, signer }) {
     }
     fetchMarketplaceContract();
   }, [signer, collectionAddress, tokenId]);
+
+  // Check if user approved WETH for marketplace contract
+  useEffect(() => {
+    async function checkApprovedWeth() {
+      if (signer) {
+        let wethContract = await new ethers.Contract(
+          WETH_CONTRACT,
+          wethABI,
+          signer
+        )
+        let allowance = await wethContract.allowance(
+          await signer.getAddress(),
+          MARKETPLACE_CONTRACT
+        );
+        console.log("allowance weth", allowance);
+        if (allowance > 0) {
+          setUserApprovedWeth(true);
+        }
+      }
+    }
+    checkApprovedWeth();
+  }, [signer])
 
   // List your NFT for sale
   const listNFT = async () => {
@@ -269,6 +292,45 @@ export default function Token({ provider, signer }) {
     }
   }
 
+  // Approve weth
+  const approveWeth = async () => {
+    if (signer) {
+      let wethContract = await new ethers.Contract(
+        WETH_CONTRACT,
+        wethABI,
+        signer
+      );
+      let txResponse;
+      try {
+        txResponse = await wethContract.approve(MARKETPLACE_CONTRACT, ethers.constants.MaxUint256);
+      } catch (error) {
+        setTxStatus("error");
+        setErrorMessage(
+          (error.data && error.data.message)
+            ? error.message + " " + error.data.message
+            : error.message);
+        return;
+      }
+      setTxHash(txResponse.hash);
+      setTxStatus("processing");
+      try {
+        await txResponse.wait();
+        setTxStatus("success");
+        setUserApprovedWeth(true)
+      } catch (error) {
+        console.log("ERROR", error);
+        setErrorMessage(
+          (error.data && error.data.message)
+            ? error.message + " " + error.data.message
+            : error.message);
+        setTxStatus("error")
+        return;
+      }
+    } else {
+      alert("Connect to Metamask!");
+    }
+  }
+
   return (
     <div style={{ marginLeft: '3rem' }}>
       {name && <h1>{name}</h1>}
@@ -300,10 +362,19 @@ export default function Token({ provider, signer }) {
                 {(offer && offer.price) ?
                   <button onClick={buyNow}>Buy Now</button> : ""
                 }
-                {/*<div>*/}
-                {/*  <input type="number" />*/}
-                {/*  <button>Bid</button>*/}
-                {/*</div>*/}
+                {/* Approve WETH if not approved, else Bid button */}
+                <div>
+                  {
+                    !userApprovedWeth
+                      ? <button onClick={approveWeth}>
+                          Approve Weth before you can bid
+                        </button>
+                      : <div>
+                        <input type="number" />
+                        <button>Bid</button>
+                      </div>
+                  }
+                </div>
               </div>
           }
           {/* Current bid and offer information */}
