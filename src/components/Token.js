@@ -114,9 +114,11 @@ export default function Token({ provider, signer }) {
         ethers.utils.parseEther(salePrice)
       );
     } catch (error) {
-      console.log("ERROR: ", error);
       setTxStatus("error");
-      setErrorMessage(error.message);
+      setErrorMessage(
+        (error.data && error.data.message)
+          ? error.message + " " + error.data.message
+          : error.message);
       return;
     }
     setTxHash(txResponse.hash);
@@ -128,7 +130,10 @@ export default function Token({ provider, signer }) {
       await refreshBidAsk();
     } catch (error) {
       console.log("ERROR", error);
-      setErrorMessage(error.message);
+      setErrorMessage(
+        (error.data && error.data.message)
+          ? error.message + " " + error.data.message
+          : error.message);
       setTxStatus("error")
       return;
     }
@@ -145,14 +150,17 @@ export default function Token({ provider, signer }) {
       bidder: bid.bidder});
   }
 
+  // Delist your NFT's offer
   const delist = async () => {
-    console.log("delist!");
     let txResponse;
     try {
       txResponse = await marketplaceContract.removeOffer(collectionAddress, tokenId);
     } catch (error) {
       setTxStatus("error");
-      setErrorMessage(error.message);
+      setErrorMessage(
+        (error.data && error.data.message)
+          ? error.message + " " + error.data.message
+          : error.message);
       return;
     }
     setTxHash(txResponse.hash);
@@ -164,9 +172,55 @@ export default function Token({ provider, signer }) {
       await refreshBidAsk();
     } catch (error) {
       console.log("ERROR", error);
-      setErrorMessage(error.message);
+      setErrorMessage(
+        (error.data && error.data.message)
+          ? error.message + " " + error.data.message
+          : error.message);
       setTxStatus("error")
       return;
+    }
+  }
+
+  // Buy now
+  const buyNow = async () => {
+    if (!signer) {
+      alert("Connect to Metamask!");
+    } else {
+      let txResponse;
+      let offerInWei = ethers.utils.parseEther(offer.price.toString()).toString();
+      try {
+        txResponse = await marketplaceContract.takeOffer(
+          collectionAddress,
+          tokenId,
+          {
+            value: offerInWei
+          }
+        );
+      } catch (error) {
+        setTxStatus("error");
+        setErrorMessage(
+          (error.data && error.data.message)
+            ? error.message + " " + error.data.message
+            : error.message);
+        return;
+      }
+      setTxHash(txResponse.hash);
+      setTxStatus("processing");
+      let txReceipt;
+      try {
+        txReceipt = await txResponse.wait();
+        setTxStatus("success");
+        await refreshBidAsk();
+        setOwner(await signer.getAddress());
+      } catch (error) {
+        console.log("ERROR", error);
+        setErrorMessage(
+          (error.data && error.data.message)
+            ? error.message + " " + error.data.message
+            : error.message);
+        setTxStatus("error")
+        return;
+      }
     }
   }
 
@@ -186,11 +240,21 @@ export default function Token({ provider, signer }) {
             <b>Token ID:</b> {tokenId}
           </div>
           {/* List for sale if owner */}
-          {isOwner &&
+          {isOwner ?
             <div style={{display: "flex"}}>
               <input type="number" value={salePrice} onChange={e => setSalePrice(e.target.value)} />
               <button onClick={listNFT}>List for Sale</button>
               <div><button onClick={delist}>Delist</button></div>
+            </div>
+            :
+            <div>
+              {(offer && offer.price) ?
+                <button onClick={buyNow}>Buy Now</button> : ""
+              }
+              {/*<div>*/}
+              {/*  <input type="number" />*/}
+              {/*  <button>Bid</button>*/}
+              {/*</div>*/}
             </div>
           }
           {/* Current bid and offer information */}
