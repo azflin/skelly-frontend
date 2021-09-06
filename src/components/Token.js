@@ -34,14 +34,16 @@ export default function Token({ provider, signer }) {
   const [metadata, setMetadata] = useState();
   const [name, setName] = useState();
   const [owner, setOwner] = useState();
-  const [isOwner, setIsOwner] = useState();
-  const [salePrice, setSalePrice] = useState("");
+  // const [isOwner, setIsOwner] = useState();
+  const [signerAddress, setSignerAddress] = useState();
+  const [salePriceInput, setSalePriceInput] = useState("");
   const [marketplaceContract, setMarketplaceContract] = useState();
   const [txHash, setTxHash] = useState();
   const [errorMessage, setErrorMessage] = useState("");
   const [txStatus, setTxStatus] = useState();
   const [bid, setBid] = useState();
   const [offer, setOffer] = useState();
+  const [userApprovedNftTransfer, setUserApprovedNftTransfer] = useState();
 
   // Fetch ERC721 contract details and tokenURI json when collectionAddress or tokenID
   // change
@@ -58,31 +60,29 @@ export default function Token({ provider, signer }) {
       setOwner(ownerLocal);
       if (signer) {
         let address = await signer.getAddress();
-        if (address == ownerLocal) {
-          setIsOwner(true);
-        }
+        setSignerAddress(address);
+        let isApproved = await contract.isApprovedForAll(address, MARKETPLACE_CONTRACT);
+        setUserApprovedNftTransfer(isApproved);
       }
 
+      // Fetch token URI data
       let uri = await contract.tokenURI(tokenId);
-      console.log("URI", uri);
       let response = await fetch(uri);
-
       if (response.ok) {
         let data = await response.json();
         setMetadata(data);
       } else {
         console.log('HTTP-Error: ' + response.status);
       }
+      // refreshBidAsk();
     }
     fetchAPI();
   }, [collectionAddress, tokenId]);
 
-  // get marketplace contract and connect with signer
+  // get marketplace contract and connect with signer (if signer). Get NFT contract
+  // and check if signer is approved. Set bid and offer.
   useEffect(() => {
     async function fetchMarketplaceContract() {
-      console.log("Marketplace contract");
-      console.log(MARKETPLACE_CONTRACT);
-      console.log(marketplaceABI);
       let contract = await new ethers.Contract(
         MARKETPLACE_CONTRACT,
         marketplaceABI,
@@ -98,11 +98,20 @@ export default function Token({ provider, signer }) {
         bidder: bid.bidder});
       if (signer) {
         contract = contract.connect(signer);
+        let signerAddress = await signer.getAddress();
+        let nftContract = await new ethers.Contract(
+          collectionAddress,
+          collectionABI,
+          provider
+        );
+        let isApproved = await nftContract.isApprovedForAll(signerAddress, MARKETPLACE_CONTRACT);
+        setUserApprovedNftTransfer(isApproved);
       }
       setMarketplaceContract(contract);
+      setSalePriceInput("");
     }
     fetchMarketplaceContract();
-  }, [signer]);
+  }, [signer, collectionAddress, tokenId]);
 
   // List your NFT for sale
   const listNFT = async () => {
@@ -111,7 +120,7 @@ export default function Token({ provider, signer }) {
       txResponse = await marketplaceContract.makeOffer(
         collectionAddress,
         tokenId,
-        ethers.utils.parseEther(salePrice)
+        ethers.utils.parseEther(salePriceInput)
       );
     } catch (error) {
       setTxStatus("error");
@@ -123,9 +132,8 @@ export default function Token({ provider, signer }) {
     }
     setTxHash(txResponse.hash);
     setTxStatus("processing");
-    let txReceipt;
     try {
-      txReceipt = await txResponse.wait();
+      await txResponse.wait();
       setTxStatus("success");
       await refreshBidAsk();
     } catch (error) {
@@ -165,9 +173,8 @@ export default function Token({ provider, signer }) {
     }
     setTxHash(txResponse.hash);
     setTxStatus("processing");
-    let txReceipt;
     try {
-      txReceipt = await txResponse.wait();
+      await txResponse.wait();
       setTxStatus("success");
       await refreshBidAsk();
     } catch (error) {
@@ -206,9 +213,8 @@ export default function Token({ provider, signer }) {
       }
       setTxHash(txResponse.hash);
       setTxStatus("processing");
-      let txReceipt;
       try {
-        txReceipt = await txResponse.wait();
+        await txResponse.wait();
         setTxStatus("success");
         await refreshBidAsk();
         setOwner(await signer.getAddress());
@@ -221,6 +227,45 @@ export default function Token({ provider, signer }) {
         setTxStatus("error")
         return;
       }
+    }
+  }
+
+  // Approve your NFT for sale
+  const approveForSale = async () => {
+    if (signer) {
+      let nftContract = await new ethers.Contract(
+        collectionAddress,
+        collectionABI,
+        signer
+      );
+      let txResponse;
+      try {
+        txResponse = await nftContract.setApprovalForAll(MARKETPLACE_CONTRACT, true);
+      } catch (error) {
+        setTxStatus("error");
+        setErrorMessage(
+          (error.data && error.data.message)
+            ? error.message + " " + error.data.message
+            : error.message);
+        return;
+      }
+      setTxHash(txResponse.hash);
+      setTxStatus("processing");
+      try {
+        await txResponse.wait();
+        setTxStatus("success");
+        setUserApprovedNftTransfer(true);
+      } catch (error) {
+        console.log("ERROR", error);
+        setErrorMessage(
+          (error.data && error.data.message)
+            ? error.message + " " + error.data.message
+            : error.message);
+        setTxStatus("error")
+        return;
+      }
+    } else {
+      alert("Connect to metamask!");
     }
   }
 
@@ -240,22 +285,26 @@ export default function Token({ provider, signer }) {
             <b>Token ID:</b> {tokenId}
           </div>
           {/* List for sale if owner */}
-          {isOwner ?
-            <div style={{display: "flex"}}>
-              <input type="number" value={salePrice} onChange={e => setSalePrice(e.target.value)} />
-              <button onClick={listNFT}>List for Sale</button>
-              <div><button onClick={delist}>Delist</button></div>
-            </div>
-            :
-            <div>
-              {(offer && offer.price) ?
-                <button onClick={buyNow}>Buy Now</button> : ""
-              }
-              {/*<div>*/}
-              {/*  <input type="number" />*/}
-              {/*  <button>Bid</button>*/}
-              {/*</div>*/}
-            </div>
+          {signerAddress === owner ?
+            userApprovedNftTransfer ?
+              <div style={{display: "flex"}}>
+                <input
+                  type="number"
+                  value={salePriceInput}
+                  onChange={e => setSalePriceInput(e.target.value)} />
+                <button onClick={listNFT}>List for Sale</button>
+                <div><button onClick={delist}>Delist</button></div>
+              </div>
+              : <button onClick={approveForSale}>Approve For Sale</button>
+              : <div>
+                {(offer && offer.price) ?
+                  <button onClick={buyNow}>Buy Now</button> : ""
+                }
+                {/*<div>*/}
+                {/*  <input type="number" />*/}
+                {/*  <button>Bid</button>*/}
+                {/*</div>*/}
+              </div>
           }
           {/* Current bid and offer information */}
           {offer && offer.price ?
