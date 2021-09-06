@@ -2,7 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ethers } from 'ethers';
 import collectionABI from '../abis/collectionABI';
-import {NETWORK} from "../config";
+import marketplaceABI from '../abis/marketplaceABI';
+import { NETWORK, MARKETPLACE_CONTRACT } from "../config";
+import {Status} from "./Status";
+import styled from "styled-components";
+
+const Dots = styled.span`
+  &::after {
+    display: inline-block;
+    animation: ellipsis 1.25s infinite;
+    content: ".";
+    width: 1em;
+    text-align: left;
+  }
+  @keyframes ellipsis {
+    0% {
+      content: ".";
+    }
+    33% {
+      content: "..";
+    }
+    66% {
+      content: "...";
+    }
+  }
+`
 
 export default function Token({ provider, signer }) {
   const { collectionAddress, tokenId } = useParams();
@@ -11,14 +35,16 @@ export default function Token({ provider, signer }) {
   const [name, setName] = useState();
   const [owner, setOwner] = useState();
   const [isOwner, setIsOwner] = useState();
-  const [salePrice, setSalePrice] = useState();
+  const [salePrice, setSalePrice] = useState("");
+  const [marketplaceContract, setMarketplaceContract] = useState();
+  const [txHash, setTxHash] = useState();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [txStatus, setTxStatus] = useState();
 
   // Fetch contract details and tokenURI json when collectionAddress or tokenID
   // change
   useEffect(() => {
     async function fetchAPI() {
-      console.log("UseEffect", collectionAddress, tokenId);
-      console.log("signer", signer);
       let contract = await new ethers.Contract(
         collectionAddress,
         collectionABI,
@@ -46,6 +72,57 @@ export default function Token({ provider, signer }) {
     fetchAPI();
   }, [collectionAddress, tokenId]);
 
+  // get marketplace contract and connect with signer
+  useEffect(() => {
+    async function fetchMarketplaceContract() {
+      if (signer) {
+        console.log("Marketplace contract");
+        console.log(MARKETPLACE_CONTRACT);
+        console.log(marketplaceABI);
+        let contract = await new ethers.Contract(
+          MARKETPLACE_CONTRACT,
+          marketplaceABI,
+          provider
+        );
+        setMarketplaceContract(contract.connect(signer));
+      }
+    }
+    fetchMarketplaceContract();
+  }, [signer]);
+
+  const listNFT = async () => {
+    let txResponse;
+    try {
+      txResponse = await marketplaceContract.makeOffer(
+        collectionAddress,
+        tokenId,
+        ethers.utils.parseEther(salePrice)
+      );
+    } catch (error) {
+      console.log("ERROR: ", error);
+      setTxStatus("error");
+      setErrorMessage(error.message);
+      return;
+    }
+    setTxHash(txResponse.hash);
+    setTxStatus("processing");
+    let txReceipt;
+    try {
+      txReceipt = await txResponse.wait();
+      setTxStatus("success");
+    } catch (error) {
+      console.log("ERROR", error);
+      setErrorMessage(error.message);
+      setTxStatus("error")
+      return;
+    }
+    if (txReceipt.status === 1) {
+      console.log("txReceipt", txReceipt);
+    } else {
+      console.log("Transaction receipt somehow has non 1 status.");
+    }
+  }
+
   return (
     <div style={{ marginLeft: '3rem' }}>
       {name && <h1>{name}</h1>}
@@ -64,7 +141,7 @@ export default function Token({ provider, signer }) {
           {isOwner &&
             <div style={{display: "flex"}}>
               <input type="number" value={salePrice} onChange={e => setSalePrice(e.target.value)} />
-              <button>List for Sale</button>
+              <button onClick={listNFT}>List for Sale</button>
             </div>
           }
         </div>
@@ -78,6 +155,33 @@ export default function Token({ provider, signer }) {
           }
         )}
       </div>
+      {txStatus === "processing" &&
+      <Status
+        type="processing"
+        url={NETWORK.block_explorer_url + "tx/" + txHash}
+        txHash={txHash}
+        messageJSX={<div>Processing Transaction<Dots></Dots></div>}>
+      </Status>
+      }
+      {txStatus === "error" &&
+      <Status
+        type="error"
+        messageJSX={<div>{errorMessage}</div>}
+        closeable={true}
+        setTxStatus={setTxStatus}>
+      </Status>
+      }
+      {txStatus === "success" &&
+      <Status
+        type="success"
+        url={NETWORK.block_explorer_url + "tx/" + txHash}
+        txHash={txHash}
+        messageJSX={<div>Success!</div>}
+        closeable={true}
+        setTxStatus={setTxStatus}
+      >
+      </Status>
+      }
     </div>
   );
 }
