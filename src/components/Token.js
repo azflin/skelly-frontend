@@ -121,6 +121,7 @@ export default function Token({ provider, signer }) {
     try {
       txReceipt = await txResponse.wait();
       setTxStatus("success");
+      await refreshBidAsk();
     } catch (error) {
       console.log("ERROR", error);
       setErrorMessage(error.message);
@@ -132,6 +133,17 @@ export default function Token({ provider, signer }) {
     } else {
       console.log("Transaction receipt somehow has non 1 status.");
     }
+  }
+
+  const refreshBidAsk = async () => {
+    let offer = await marketplaceContract.offers(collectionAddress, tokenId);
+    let bid = await marketplaceContract.bids(collectionAddress, tokenId);
+    setOffer({
+      price: parseFloat(ethers.utils.formatEther(offer.price)),
+      seller: offer.seller});
+    setBid({
+      price: parseFloat(ethers.utils.formatEther(bid.price)),
+      bidder: bid.bidder});
   }
 
   return (
