@@ -40,8 +40,10 @@ export default function Token({ provider, signer }) {
   const [txHash, setTxHash] = useState();
   const [errorMessage, setErrorMessage] = useState("");
   const [txStatus, setTxStatus] = useState();
+  const [bid, setBid] = useState();
+  const [offer, setOffer] = useState();
 
-  // Fetch contract details and tokenURI json when collectionAddress or tokenID
+  // Fetch ERC721 contract details and tokenURI json when collectionAddress or tokenID
   // change
   useEffect(() => {
     async function fetchAPI() {
@@ -60,6 +62,7 @@ export default function Token({ provider, signer }) {
       }
 
       let uri = await contract.tokenURI(tokenId);
+      console.log("URI", uri);
       let response = await fetch(uri);
 
       if (response.ok) {
@@ -84,6 +87,14 @@ export default function Token({ provider, signer }) {
           marketplaceABI,
           provider
         );
+        let offer = await contract.offers(collectionAddress, tokenId);
+        setOffer({
+          price: parseFloat(ethers.utils.formatEther(offer.price)),
+          seller: offer.seller});
+        let bid = await contract.bids(collectionAddress, tokenId);
+        setBid({
+          price: parseFloat(ethers.utils.formatEther(bid.price)),
+          bidder: bid.bidder});
         setMarketplaceContract(contract.connect(signer));
       }
     }
@@ -138,11 +149,17 @@ export default function Token({ provider, signer }) {
           <div>
             <b>Token ID:</b> {tokenId}
           </div>
+          {/* List for sale if owner */}
           {isOwner &&
             <div style={{display: "flex"}}>
               <input type="number" value={salePrice} onChange={e => setSalePrice(e.target.value)} />
               <button onClick={listNFT}>List for Sale</button>
             </div>
+          }
+          {/* Current bid and offer information */}
+          {offer && offer.price ?
+            <div>{offer.seller} selling for : {offer.price} {NETWORK.currency}</div>
+            : <div>Not Listed for Sale</div>
           }
         </div>
       </div>
