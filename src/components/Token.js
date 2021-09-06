@@ -56,9 +56,11 @@ export default function Token({ provider, signer }) {
       setName(await contract.name());
       let ownerLocal = await contract.ownerOf(tokenId)
       setOwner(ownerLocal);
-      let address = await signer.getAddress();
-      if (address == ownerLocal) {
-        setIsOwner(true);
+      if (signer) {
+        let address = await signer.getAddress();
+        if (address == ownerLocal) {
+          setIsOwner(true);
+        }
       }
 
       let uri = await contract.tokenURI(tokenId);
@@ -78,29 +80,31 @@ export default function Token({ provider, signer }) {
   // get marketplace contract and connect with signer
   useEffect(() => {
     async function fetchMarketplaceContract() {
+      console.log("Marketplace contract");
+      console.log(MARKETPLACE_CONTRACT);
+      console.log(marketplaceABI);
+      let contract = await new ethers.Contract(
+        MARKETPLACE_CONTRACT,
+        marketplaceABI,
+        provider
+      );
+      let offer = await contract.offers(collectionAddress, tokenId);
+      setOffer({
+        price: parseFloat(ethers.utils.formatEther(offer.price)),
+        seller: offer.seller});
+      let bid = await contract.bids(collectionAddress, tokenId);
+      setBid({
+        price: parseFloat(ethers.utils.formatEther(bid.price)),
+        bidder: bid.bidder});
       if (signer) {
-        console.log("Marketplace contract");
-        console.log(MARKETPLACE_CONTRACT);
-        console.log(marketplaceABI);
-        let contract = await new ethers.Contract(
-          MARKETPLACE_CONTRACT,
-          marketplaceABI,
-          provider
-        );
-        let offer = await contract.offers(collectionAddress, tokenId);
-        setOffer({
-          price: parseFloat(ethers.utils.formatEther(offer.price)),
-          seller: offer.seller});
-        let bid = await contract.bids(collectionAddress, tokenId);
-        setBid({
-          price: parseFloat(ethers.utils.formatEther(bid.price)),
-          bidder: bid.bidder});
-        setMarketplaceContract(contract.connect(signer));
+        contract = contract.connect(signer);
       }
+      setMarketplaceContract(contract);
     }
     fetchMarketplaceContract();
   }, [signer]);
 
+  // List your NFT for sale
   const listNFT = async () => {
     let txResponse;
     try {
@@ -128,11 +132,6 @@ export default function Token({ provider, signer }) {
       setTxStatus("error")
       return;
     }
-    if (txReceipt.status === 1) {
-      console.log("txReceipt", txReceipt);
-    } else {
-      console.log("Transaction receipt somehow has non 1 status.");
-    }
   }
 
   const refreshBidAsk = async () => {
@@ -144,6 +143,31 @@ export default function Token({ provider, signer }) {
     setBid({
       price: parseFloat(ethers.utils.formatEther(bid.price)),
       bidder: bid.bidder});
+  }
+
+  const delist = async () => {
+    console.log("delist!");
+    let txResponse;
+    try {
+      txResponse = await marketplaceContract.removeOffer(collectionAddress, tokenId);
+    } catch (error) {
+      setTxStatus("error");
+      setErrorMessage(error.message);
+      return;
+    }
+    setTxHash(txResponse.hash);
+    setTxStatus("processing");
+    let txReceipt;
+    try {
+      txReceipt = await txResponse.wait();
+      setTxStatus("success");
+      await refreshBidAsk();
+    } catch (error) {
+      console.log("ERROR", error);
+      setErrorMessage(error.message);
+      setTxStatus("error")
+      return;
+    }
   }
 
   return (
@@ -166,6 +190,7 @@ export default function Token({ provider, signer }) {
             <div style={{display: "flex"}}>
               <input type="number" value={salePrice} onChange={e => setSalePrice(e.target.value)} />
               <button onClick={listNFT}>List for Sale</button>
+              <div><button onClick={delist}>Delist</button></div>
             </div>
           }
           {/* Current bid and offer information */}
