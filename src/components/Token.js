@@ -37,6 +37,7 @@ export default function Token({ provider, signer }) {
   const [owner, setOwner] = useState();
   const [signerAddress, setSignerAddress] = useState();
   const [salePriceInput, setSalePriceInput] = useState("");
+  const [bidInput, setBidInput] = useState("");
   const [marketplaceContract, setMarketplaceContract] = useState();
   const [txHash, setTxHash] = useState();
   const [errorMessage, setErrorMessage] = useState("");
@@ -110,6 +111,7 @@ export default function Token({ provider, signer }) {
       }
       setMarketplaceContract(contract);
       setSalePriceInput("");
+      setBidInput("");
     }
     fetchMarketplaceContract();
   }, [signer, collectionAddress, tokenId]);
@@ -159,6 +161,41 @@ export default function Token({ provider, signer }) {
       await txResponse.wait();
       setTxStatus("success");
       await refreshBidAsk();
+      setSalePriceInput("");
+    } catch (error) {
+      console.log("ERROR", error);
+      setErrorMessage(
+        (error.data && error.data.message)
+          ? error.message + " " + error.data.message
+          : error.message);
+      setTxStatus("error")
+      return;
+    }
+  }
+
+  const bidNFT = async () => {
+    let txResponse;
+    try {
+      txResponse = await marketplaceContract.makeBid(
+        collectionAddress,
+        tokenId,
+        ethers.utils.parseEther(bidInput)
+      );
+    } catch (error) {
+      setTxStatus("error");
+      setErrorMessage(
+        (error.data && error.data.message)
+          ? error.message + " " + error.data.message
+          : error.message);
+      return;
+    }
+    setTxHash(txResponse.hash);
+    setTxStatus("processing");
+    try {
+      await txResponse.wait();
+      setTxStatus("success");
+      await refreshBidAsk();
+      setBidInput("");
     } catch (error) {
       console.log("ERROR", error);
       setErrorMessage(
@@ -370,17 +407,25 @@ export default function Token({ provider, signer }) {
                           Approve Weth before you can bid
                         </button>
                       : <div>
-                        <input type="number" />
-                        <button>Bid</button>
+                        <input
+                          value={bidInput}
+                          onChange={e => setBidInput(e.target.value)}
+                          type="number" />
+                        <button onClick={bidNFT}>Bid</button>
                       </div>
                   }
                 </div>
               </div>
           }
-          {/* Current bid and offer information */}
+          {/* Current offer information */}
           {offer && offer.price ?
             <div>{offer.seller} selling for : {offer.price} {NETWORK.currency}</div>
             : <div>Not Listed for Sale</div>
+          }
+          {/* Current Bid information */}
+          {bid && bid.price ?
+            <div>{bid.bidder} bidding : {bid.price} {NETWORK.currency}</div>
+            : <div>No Bids</div>
           }
         </div>
       </div>
