@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { NETWORK } from "../config";
+import { NETWORK, API_URL } from "../config";
 
 export default function Wallet() {
   const { address } = useParams();
   const [nfts, setNfts] = useState();
+  const [nftsWithActivity, setNftsWithActivity] = useState();
 
   useEffect(() => {
     async function fetchWallet() {
       console.log("Wallet useEffect");
-      const response = await fetch(
+      let response = await fetch(
         `https://api.paintswap.finance/userNFTs/${address}?allowNSFW=true&numToFetch=150&numToSkip=0`
       );
-      const data = await response.json();
+      let data = await response.json();
       setNfts(data.nfts);
+      response = await fetch(API_URL + "wallet/" + address);
+      data = await response.json();
+      console.log(data);
+      setNftsWithActivity(data);
     }
     fetchWallet();
   }, [address]);
@@ -26,6 +31,14 @@ export default function Wallet() {
           address.slice(address.length - 4, address.length)}
         's NFTs
       </h1>
+      <div>
+        <div style={{fontWeight: "600", fontSize: "18px", marginBottom: "10px"}}>
+          NFTs with Marketplace Activity
+        </div>
+      </div>
+      <div style={{fontWeight: "600", fontSize: "18px", marginBottom: "10px"}}>
+        All Wallet's NFTs
+      </div>
       <table>
         <thead>
           <tr>
