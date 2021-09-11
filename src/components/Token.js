@@ -28,6 +28,33 @@ const Dots = styled.span`
     }
   }
 `
+const Raised = styled.div`
+  padding: 10px;
+  background-color: rgba(214, 212, 203);
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: 500
+`
+const RaisedButton = styled.button`
+  padding: 10px;
+  background-color: ${props => props.primary ? "rgba(102, 252, 3, 0.7)" : "rgba(245, 81, 81, 0.7)"};
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: 500;
+  &:hover {
+    background-color: ${props => props.primary ? "rgba(102, 252, 3, 0.3)" : "rgba(245, 81, 81, 0.3)"};
+    cursor: pointer;
+  }
+`
+const BorderedDiv = styled.div`
+  display: flex;
+  padding: 10px;
+  border: 2px solid #d6d4cb;
+  border-radius: 10px;
+  background-color: rgba(214, 212, 203, 0.3);
+  justify-content: space-around;
+  margin-bottom: 10px;
+`
 
 export default function Token({ provider, signer }) {
   const { collectionAddress, tokenId } = useParams();
@@ -445,67 +472,90 @@ export default function Token({ provider, signer }) {
 
   return (
     <div style={{ marginLeft: '3rem' }}>
-      {name && <h1>{name}</h1>}
       <div style={{ display: 'flex' }}>
         <img style={{ maxWidth: '22rem' }} src={metadata && metadata.image} />
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div>
-            <b>Owner: </b>
+          {name &&
+            <h1>
+              <a href={"#/collection/" + collectionAddress}>{name}</a>
+              &nbsp;#{tokenId}
+            </h1>
+          }
+          <div style={{
+            fontSize: '18px',
+            fontWeight: 500,
+            marginBottom: "10px"
+          }}>
+            Owned by&nbsp;
             <a href={NETWORK.block_explorer_url + "address/" + {owner}} target="_blank">
               {owner}
             </a>
           </div>
-          <div>
-            <b>Token ID:</b> {tokenId}
-          </div>
+          <BorderedDiv>
+            {/* Current offer information */}
+            {offer && offer.price ?
+              <Raised style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                <div>Buy Now:</div>
+                <div style={{ fontWeight: 700 }}>{offer.price} {NETWORK.currency}</div>
+              </Raised>
+              : <Raised>
+                Not Listed for Buy Now
+              </Raised>
+            }
+            {/* Current Bid information */}
+            {bid && bid.price ?
+              <div>
+                <Raised style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                  <div>{bid.bidder.slice(0, 6) + "..." + bid.bidder.slice(bid.bidder.length - 4, bid.bidder.length)} bidding:</div>
+                  <div style={{ fontWeight: 700 }}>{bid.price} {NETWORK.currency}</div>
+                </Raised>
+              </div>
+              : <Raised>No Bids</Raised>
+            }
+          </BorderedDiv>
           {/* List for sale if owner */}
           {signerAddress === owner ?
             userApprovedNftTransfer ?
-              <div style={{display: "flex"}}>
-                <input
-                  type="number"
-                  value={salePriceInput}
-                  onChange={e => setSalePriceInput(e.target.value)} />
-                <button onClick={listNFT}>List for Sale</button>
-                <div><button onClick={delist}>Delist</button></div>
-              </div>
-              : <button onClick={approveForSale}>Approve For Sale</button>
-              : <div>
-                {(offer && offer.price) ?
-                  <button onClick={buyNow}>Buy Now</button> : ""
-                }
-                {/* Approve WETH if not approved, else Bid button */}
+              <BorderedDiv style={{ justifyContent: "space-between" }}>
                 <div>
-                  {
-                    !userApprovedWeth
-                      ? <button onClick={approveWeth}>
-                          Approve Weth before you can bid
-                        </button>
-                      : <div>
-                        <input
-                          value={bidInput}
-                          onChange={e => setBidInput(e.target.value)}
-                          type="number" />
-                        <button onClick={bidNFT}>Bid</button>
-                      </div>
-                  }
+                  <input
+                    type="number"
+                    value={salePriceInput}
+                    style={{height: "80%", fontSize: "18px", width: "150px", marginRight: "10px"}}
+                    onChange={e => setSalePriceInput(e.target.value)} />
+                  <RaisedButton onClick={listNFT} primary>List for Sale</RaisedButton>
                 </div>
+                {(offer && offer.price) ?
+                <RaisedButton onClick={delist}>Delist</RaisedButton> : ""}
+              </BorderedDiv>
+              : <button onClick={approveForSale}>Approve For Sale</button>
+            : <div>
+              {(offer && offer.price) ?
+                <button onClick={buyNow}>Buy Now</button> : ""
+              }
+              {/* Approve WETH if not approved, else Bid button */}
+              <div>
+                {
+                  !userApprovedWeth
+                    ? <button onClick={approveWeth}>
+                      Approve Weth before you can bid
+                    </button>
+                    : <div>
+                      <input
+                        value={bidInput}
+                        onChange={e => setBidInput(e.target.value)}
+                        type="number" />
+                      <button onClick={bidNFT}>Bid</button>
+                    </div>
+                }
               </div>
+            </div>
           }
           {/* Accept bid if owner */}
           {(signerAddress === owner && bid && bid.price) ?
             <button onClick={acceptBid}>Accept Bid</button> : ""
           }
-          {/* Current offer information */}
-          {offer && offer.price ?
-            <div>{offer.seller} selling for : {offer.price} {NETWORK.currency}</div>
-            : <div>Not Listed for Sale</div>
-          }
-          {/* Current Bid information */}
-          {bid && bid.price ?
-            <div>{bid.bidder} bidding : {bid.price} {NETWORK.currency}</div>
-            : <div>No Bids</div>
-          }
+          {/* Cancel bid if bidder */}
           {(bid && bid.bidder === signerAddress) &&
             <button onClick={cancelBid}>Cancel Bid</button>
           }

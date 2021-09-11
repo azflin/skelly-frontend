@@ -36,10 +36,10 @@ const SidebarDiv = styled.div`
   width: 220px;
   height: 100vh;
   overflow: auto;
-  border-right: 5px ridge #b6d4fe;
+  border-right: 5px ridge #d6d4cb;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
-  background-color: #b6d4fe;
+  background-color: #d6d4cb;
   padding: 0px 15px;
 `
 const MainDiv = styled.div`
@@ -47,7 +47,7 @@ const MainDiv = styled.div`
   height: 100vh;
   overflow: auto;
   padding: 0px 15px;
-  background-color: floralwhite;
+  background-color: ghostwhite;
 `
 
 function App() {
