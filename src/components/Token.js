@@ -174,6 +174,18 @@ export default function Token({ provider, signer }) {
   }
 
   const bidNFT = async () => {
+    let wethContract = await new ethers.Contract(
+      WETH_CONTRACT,
+      wethABI,
+      signer
+    );
+    let wethBalance = await wethContract.balanceOf(signerAddress);
+    wethBalance = ethers.utils.formatEther(wethBalance);
+    if (parseFloat(wethBalance) < parseFloat(bidInput)) {
+      setTxStatus("error");
+      setErrorMessage("You do not have enough " + NETWORK.currency);
+      return;
+    }
     let txResponse;
     try {
       txResponse = await marketplaceContract.makeBid(
@@ -310,8 +322,8 @@ export default function Token({ provider, signer }) {
       try {
         await txResponse.wait();
         setTxStatus("success");
+        setOwner(await bid.bidder);
         await refreshBidAsk();
-        setOwner(await signer.getAddress());
       } catch (error) {
         console.log("ERROR", error);
         setErrorMessage(
@@ -321,6 +333,35 @@ export default function Token({ provider, signer }) {
         setTxStatus("error")
         return;
       }
+    }
+  }
+
+  const cancelBid = async () => {
+    let txResponse;
+    try {
+      txResponse = await marketplaceContract.removeBid(collectionAddress, tokenId);
+    } catch (error) {
+      setTxStatus("error");
+      setErrorMessage(
+        (error.data && error.data.message)
+          ? error.message + " " + error.data.message
+          : error.message);
+      return;
+    }
+    setTxHash(txResponse.hash);
+    setTxStatus("processing");
+    try {
+      await txResponse.wait();
+      setTxStatus("success");
+      await refreshBidAsk();
+    } catch (error) {
+      console.log("ERROR", error);
+      setErrorMessage(
+        (error.data && error.data.message)
+          ? error.message + " " + error.data.message
+          : error.message);
+      setTxStatus("error")
+      return;
     }
   }
 
@@ -464,6 +505,9 @@ export default function Token({ provider, signer }) {
           {bid && bid.price ?
             <div>{bid.bidder} bidding : {bid.price} {NETWORK.currency}</div>
             : <div>No Bids</div>
+          }
+          {(bid && bid.bidder === signerAddress) &&
+            <button onClick={cancelBid}>Cancel Bid</button>
           }
         </div>
       </div>
