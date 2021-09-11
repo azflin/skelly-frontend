@@ -665,17 +665,38 @@ export default function Token({ provider, signer }) {
         </div>
       </div>
       {/* NFT Metadata */}
-      <div>
+      <BorderedDiv style={{maxWidth: "1000px", flexDirection: "column", display: "inline-block", padding: "20px"}}>
+        <div style={{fontSize: "22px", fontWeight: 600}}>Metadata</div>
         {metadata &&
           Object.keys(metadata).map((key) => {
             if (key === "image") return;
             return (
-              <p key={key}>
-                {key}: {JSON.stringify(metadata[key])}
-              </p>
+              <div style={{marginTop: "5px", marginBottom: "5px"}} key={key}>
+                <span style={{fontSize: "18px", fontWeight: 600}}>{key}:</span>
+                {key === "attributes" ?
+                  <div>
+                    <table style={{marginTop: "10px"}}>
+                      <thead>
+                        <tr>
+                          <th>Trait Type</th>
+                          <th>Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {metadata[key].map((x) =>
+                          <tr>
+                            <td>{x.trait_type}</td>
+                            <td>{x.value}</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  : <span>{JSON.stringify(metadata[key])}</span>}
+              </div>
             );
           })}
-      </div>
+      </BorderedDiv>
       {txStatus === "processing" && (
         <Status
           type="processing"

@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 const StatusDiv = styled.div`
   position: fixed;
-  bottom: 50px;
-  right: 20px;
+  bottom: 100px;
+  right: 70px;
   border: 2px solid white;
   border-radius: 10px;
   font-size: 24px;
