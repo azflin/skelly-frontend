@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function BrowseForm() {
   const [wallet, setWallet] = useState("");
@@ -11,21 +11,37 @@ export default function BrowseForm() {
       <form>
         <label>
           Search Wallet:
-          <input type="text" value={wallet} onChange={e => setWallet(e.target.value)} />
+          <input
+            type="text"
+            value={wallet}
+            onChange={(e) => setWallet(e.target.value)}
+          />
         </label>
-        <Link to={"/wallet/" + wallet}><button>Go</button></Link>
+        <Link to={"/wallet/" + wallet}>
+          <button>Go</button>
+        </Link>
       </form>
       <form>
         <label>
           ERC721 Contract:
-          <input type="text" value={contract} onChange={e => setContract(e.target.value)} />
+          <input
+            type="text"
+            value={contract}
+            onChange={(e) => setContract(e.target.value)}
+          />
         </label>
         <label>
           Token ID:
-          <input type="text" value={tokenId} onChange={e => setTokenId(e.target.value)} />
+          <input
+            type="text"
+            value={tokenId}
+            onChange={(e) => setTokenId(e.target.value)}
+          />
         </label>
-        <Link to={"/collection/" + contract +"/" + tokenId}><button>Go</button></Link>
+        <Link to={"/collection/" + contract + "/" + tokenId}>
+          <button>Go</button>
+        </Link>
       </form>
     </div>
-  )
+  );
 }

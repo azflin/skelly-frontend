@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import BrowseForm from "./BrowseForm";
 
 export default function Browse() {
@@ -7,5 +7,5 @@ export default function Browse() {
       <h1>Browse</h1>
       <BrowseForm></BrowseForm>
     </div>
-  )
+  );
 }
