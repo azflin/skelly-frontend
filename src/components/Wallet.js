@@ -35,11 +35,51 @@ export default function Wallet() {
         <div style={{fontWeight: "600", fontSize: "18px", marginBottom: "10px"}}>
           NFTs with Marketplace Activity
         </div>
+        <table style={{borderSpacing: "5px"}}>
+          <thead>
+          <tr>
+            <th>ERC721 Contract</th>
+            <th>Token Id</th>
+            <th>Current Bid</th>
+            <th>Buy Now Price</th>
+            <th>View</th>
+          </tr>
+          </thead>
+          <tbody>
+          {nftsWithActivity &&
+          nftsWithActivity.map((nft) => (
+            <tr key={nft._id}>
+              <td>
+                <a
+                  href={NETWORK.block_explorer_url + "address/" + nft.address}
+                  target="_blank"
+                >
+                  {nft.contractAddress}
+                </a>
+              </td>
+              <td>{nft.tokenId}</td>
+              <td>
+                {nft.bidPrice}
+              </td>
+              <td>
+                {nft.offerPrice}
+              </td>
+              <td>
+                <a
+                  href={"#/collection/" + nft.contractAddress + "/" + nft.tokenId}
+                >
+                  <button>Go</button>
+                </a>
+              </td>
+            </tr>
+          ))}
+          </tbody>
+        </table>
       </div>
-      <div style={{fontWeight: "600", fontSize: "18px", marginBottom: "10px"}}>
+      <div style={{fontWeight: "600", fontSize: "18px", marginBottom: "10px", marginTop: "10px"}}>
         All Wallet's NFTs
       </div>
-      <table>
+      <table style={{borderSpacing: "5px"}}>
         <thead>
           <tr>
             <th>ERC721 Contract</th>

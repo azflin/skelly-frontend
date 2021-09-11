@@ -152,7 +152,7 @@ function App() {
             <h1>Wrong Chain - switch to FTM 250</h1>
           ) : (
             <>
-              <div align="right">
+              <div align="right" style={{marginTop: "15px", marginRight: "15px"}}>
                 {address ? (
                   <button>
                     {NETWORK.name +

@@ -26,8 +26,10 @@ export default function Browse() {
       <h1>Browse</h1>
       <BrowseForm></BrowseForm>
       <div>
-        <div style={{fontSize: "18px", fontWeight: "600", marginBottom: "15px"}}>Recent Activity</div>
-        <table>
+        <div style={{fontSize: "18px", fontWeight: "600", marginBottom: "15px"}}>
+          Recent Activity
+        </div>
+        <table style={{borderSpacing: "5px"}}>
           <thead>
             <tr>
               <th>ERC721 Contract</th>
