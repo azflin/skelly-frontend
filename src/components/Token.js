@@ -101,6 +101,10 @@ export default function Token({ provider, signer }) {
 
       // Fetch token URI data
       let uri = await contract.tokenURI(tokenId);
+      // Try using IPFS instead
+      if (!uri.startsWith("http")) {
+        uri = "https://gateway.ipfs.io/ipfs/" + uri;
+      }
       let response = await fetch(uri);
       if (response.ok) {
         let data = await response.json();
@@ -222,7 +226,7 @@ export default function Token({ provider, signer }) {
     wethBalance = ethers.utils.formatEther(wethBalance);
     if (parseFloat(wethBalance) < parseFloat(bidInput)) {
       setTxStatus("error");
-      setErrorMessage("You do not have enough " + NETWORK.currency);
+      setErrorMessage("You do not have enough W" + NETWORK.currency);
       return;
     }
     let txResponse;
@@ -518,7 +522,7 @@ export default function Token({ provider, signer }) {
   return (
     <div style={{ marginLeft: "3rem" }}>
       <div style={{ display: "flex" }}>
-        <img style={{ maxWidth: "22rem" }} src={metadata && metadata.image} />
+        <img style={{ maxWidth: "22rem", borderRadius: "10px", marginRight: "20px", marginBottom: "20px" }} src={metadata && metadata.image} />
         <div style={{ display: "flex", flexDirection: "column" }}>
           {name && (
             <h1>
@@ -555,6 +559,9 @@ export default function Token({ provider, signer }) {
                 <div style={{ fontWeight: 700 }}>
                   {offer.price} {NETWORK.currency}
                 </div>
+                {owner !== signerAddress &&
+                  <RaisedButton primary onClick={buyNow} style={{marginTop: "10px"}}>Buy</RaisedButton>
+                }
               </Raised>
             ) : (
               <Raised>Not Listed for Buy Now</Raised>
@@ -619,21 +626,16 @@ export default function Token({ provider, signer }) {
                 )}
               </BorderedDiv>
             ) : (
-              <button onClick={approveForSale}>Approve For Sale</button>
+              <RaisedButton primary style={{width: "200px"}} onClick={approveForSale}>Approve For Sale</RaisedButton>
             )
           ) : (
             <div>
-              {offer && offer.price ? (
-                <button onClick={buyNow}>Buy Now</button>
-              ) : (
-                ""
-              )}
               {/* Approve WETH if not approved, else Bid button */}
               <div>
                 {!userApprovedWeth ? (
-                  <button onClick={approveWeth}>
-                    Approve Weth before you can bid
-                  </button>
+                  <RaisedButton primary onClick={approveWeth}>
+                    Approve W{NETWORK.currency} before you can bid
+                  </RaisedButton>
                 ) : (
                   <BorderedDiv style={{ justifyContent: "space-between" }}>
                     <div>
@@ -683,12 +685,12 @@ export default function Token({ provider, signer }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {metadata[key].map((x) =>
-                          <tr>
-                            <td>{x.trait_type}</td>
-                            <td>{x.value}</td>
-                          </tr>
-                        )}
+                        {/*{metadata[key].map((x) =>*/}
+                        {/*  <tr>*/}
+                        {/*    <td>{x.trait_type}</td>*/}
+                        {/*    <td>{x.value}</td>*/}
+                        {/*  </tr>*/}
+                        {/*)}*/}
                       </tbody>
                     </table>
                   </div>
