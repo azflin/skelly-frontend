@@ -581,6 +581,11 @@ export default function Token({ provider, signer }) {
                   <div style={{ fontWeight: 700 }}>
                     {bid.price} {NETWORK.currency}
                   </div>
+                  {signerAddress === owner && bid && bid.price ? (
+                    <RaisedButton primary style={{ marginTop: "5px" }} onClick={acceptBid}>Accept Bid</RaisedButton>
+                  ) : (
+                    ""
+                  )}
                 </Raised>
               </div>
             ) : (
@@ -630,27 +635,32 @@ export default function Token({ provider, signer }) {
                     Approve Weth before you can bid
                   </button>
                 ) : (
-                  <div>
-                    <input
-                      value={bidInput}
-                      onChange={(e) => setBidInput(e.target.value)}
-                      type="number"
-                    />
-                    <button onClick={bidNFT}>Bid</button>
-                  </div>
+                  <BorderedDiv style={{ justifyContent: "space-between" }}>
+                    <div>
+                      <input
+                        value={bidInput}
+                        onChange={(e) => setBidInput(e.target.value)}
+                        type="number"
+                        style={{
+                          height: "80%",
+                          fontSize: "18px",
+                          width: "150px",
+                          marginRight: "10px",
+                        }}
+                      />
+                      <RaisedButton onClick={bidNFT} primary>
+                        Bid
+                      </RaisedButton>
+                    </div>
+                    {bid && bid.bidder === signerAddress ? (
+                      <RaisedButton onClick={cancelBid}>Cancel Bid</RaisedButton>
+                    ) : (
+                      ""
+                    )}
+                  </BorderedDiv>
                 )}
               </div>
             </div>
-          )}
-          {/* Accept bid if owner */}
-          {signerAddress === owner && bid && bid.price ? (
-            <button onClick={acceptBid}>Accept Bid</button>
-          ) : (
-            ""
-          )}
-          {/* Cancel bid if bidder */}
-          {bid && bid.bidder === signerAddress && (
-            <button onClick={cancelBid}>Cancel Bid</button>
           )}
         </div>
       </div>
