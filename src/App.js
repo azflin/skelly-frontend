@@ -32,10 +32,10 @@ const SidebarDiv = styled.div`
   width: 220px;
   height: 100vh;
   overflow: auto;
-  border-right: 5px ridge #d6d4cb;
+  border-right: 5px ridge beige;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
-  background-color: #d6d4cb;
+  background-color: beige;
   padding: 0px 15px;
 `;
 const MainDiv = styled.div`
@@ -45,6 +45,11 @@ const MainDiv = styled.div`
   padding: 0px 15px;
   background-color: ghostwhite;
 `;
+const SideBarText = styled.div`
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 5px;
+`
 
 function App() {
   // Provider, signer, and address
@@ -126,19 +131,21 @@ function App() {
     <Router>
       <Root>
         <Sidebar>
-          <h2 style={{ textAlign: "center" }}>Skelly 💀</h2>
-          <div>
-            <a href="#/">Browse</a>
+          <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+            <h2>Skelly 💀</h2>
+            <SideBarText>
+              <a href="#/">Browse</a>
+            </SideBarText>
+            <SideBarText>
+              <a href={"#/wallet/" + address}>My NFTs</a>
+            </SideBarText>
+            <h3>Collections</h3>
+            {COLLECTIONS.map((x) => (
+              <SideBarText key={x.address}>
+                <a href={"#/collection/" + x.address}>{x.name}</a>
+              </SideBarText>
+            ))}
           </div>
-          <div>
-            <a href={"#/wallet/" + address}>My NFTs</a>
-          </div>
-          <h3>Collections</h3>
-          {COLLECTIONS.map((x) => (
-            <div key={x.address}>
-              <a href={"#/collection/" + x.address}>{x.name}</a>
-            </div>
-          ))}
         </Sidebar>
         <Main>
           {wrongChain ? (
