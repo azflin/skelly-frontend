@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {BorderedDiv} from "./Token";
 
 export default function BrowseForm() {
   const [wallet, setWallet] = useState("");
@@ -7,10 +8,10 @@ export default function BrowseForm() {
   const [tokenId, setTokenId] = useState("");
 
   return (
-    <div>
-      <form>
+    <BorderedDiv style={{flexDirection: "column", display: "inline-block"}}>
+      <form style={{marginBottom: "10px"}}>
         <label>
-          Search Wallet:
+          <div style={{fontSize: "18px", fontWeight: "650"}}>Search Wallet:</div>
           <input
             type="text"
             value={wallet}
@@ -18,12 +19,13 @@ export default function BrowseForm() {
           />
         </label>
         <Link to={"/wallet/" + wallet}>
-          <button>Go</button>
+          <button style={{marginLeft: "10px"}}>Go</button>
         </Link>
       </form>
       <form>
-        <label>
-          ERC721 Contract:
+        <div style={{fontSize: "18px", fontWeight: "650"}}>Search NFT:</div>
+        <label style={{marginRight: "15px"}}>
+          ERC721 Contract:&nbsp;
           <input
             type="text"
             value={contract}
@@ -31,7 +33,7 @@ export default function BrowseForm() {
           />
         </label>
         <label>
-          Token ID:
+          Token ID:&nbsp;
           <input
             type="text"
             value={tokenId}
@@ -39,9 +41,9 @@ export default function BrowseForm() {
           />
         </label>
         <Link to={"/collection/" + contract + "/" + tokenId}>
-          <button>Go</button>
+          <button style={{marginLeft: "10px"}}>Go</button>
         </Link>
       </form>
-    </div>
+    </BorderedDiv>
   );
 }

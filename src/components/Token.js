@@ -732,3 +732,4 @@ export default function Token({ provider, signer }) {
     </div>
   );
 }
+export { BorderedDiv };
