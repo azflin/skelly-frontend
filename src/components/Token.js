@@ -76,11 +76,13 @@ export default function Token({ provider, signer }) {
   const [userApprovedNftTransfer, setUserApprovedNftTransfer] = useState();
   const [userApprovedWeth, setUserApprovedWeth] = useState();
   const [failTokenUriLoad, setFailTokenUriLoad] = useState();
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   // Fetch ERC721 contract details and tokenURI json when collectionAddress or tokenID
   // change
   useEffect(() => {
     async function fetchAPI() {
+      setImgLoaded(false);
       let contract = await new ethers.Contract(
         collectionAddress,
         collectionABI,
@@ -528,7 +530,18 @@ export default function Token({ provider, signer }) {
   return (
     <div style={{ marginLeft: "3rem" }}>
       <div style={{ display: "flex" }}>
-        <img style={{ maxWidth: "22rem", borderRadius: "10px", marginRight: "20px", marginBottom: "20px" }} src={metadata && metadata.image} />
+        {!imgLoaded &&
+          <div className="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        }
+        <img
+          style={{ maxWidth: "22rem", borderRadius: "10px", marginRight: "20px", marginBottom: "20px" }} src={metadata && metadata.image}
+          onLoad={() => setImgLoaded(true)}
+        />
         <div style={{ display: "flex", flexDirection: "column" }}>
           {name && (
             <h1>
