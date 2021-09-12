@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { NETWORK, API_URL } from "../config";
+import MarketplaceActivityTable from "./MarketplaceActivityTable";
 
 export default function Wallet() {
   const { address } = useParams();
@@ -36,54 +37,11 @@ export default function Wallet() {
         's NFTs
       </h1>
       <div>
-        <div style={{fontWeight: "600", fontSize: "18px", marginBottom: "10px"}}>
-          NFTs with Marketplace Activity
-        </div>
-          {nftsWithActivity && nftsWithActivity.length
-            ?
-            <table style={{borderSpacing: "5px"}}>
-              <thead>
-              <tr>
-                <th>ERC721 Contract</th>
-                <th>Token Id</th>
-                <th>Current Bid</th>
-                <th>Buy Now Price</th>
-                <th>View</th>
-              </tr>
-              </thead>
-              <tbody>
-              {nftsWithActivity &&
-              nftsWithActivity.map((nft) => (
-                <tr key={nft._id}>
-                  <td>
-                    <a
-                      href={NETWORK.block_explorer_url + "address/" + nft.address}
-                      target="_blank"
-                    >
-                      {nft.contractAddress}
-                    </a>
-                  </td>
-                  <td>{nft.tokenId}</td>
-                  <td>
-                    {nft.bidPrice}
-                  </td>
-                  <td>
-                    {nft.offerPrice}
-                  </td>
-                  <td>
-                    <a
-                      href={"#/collection/" + nft.contractAddress + "/" + nft.tokenId}
-                    >
-                      <button>Go</button>
-                    </a>
-                  </td>
-                </tr>
-              ))}
-              </tbody>
-            </table>
-            :
-            <div>This wallet has no NFTs with marketplace activity.</div>
-          }
+      <div>
+        {nftsWithActivity &&
+          <MarketplaceActivityTable marketplaceActivity={nftsWithActivity}></MarketplaceActivityTable>
+        }
+      </div>
       </div>
       <div style={{fontWeight: "600", fontSize: "18px", marginBottom: "10px", marginTop: "10px"}}>
         All Wallet's NFTs
