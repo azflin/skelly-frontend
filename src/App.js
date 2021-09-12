@@ -41,8 +41,6 @@ const SidebarDiv = styled.div`
   height: 100vh;
   overflow: auto;
   border-right: 5px ridge beige;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
   background-color: beige;
   padding: 0px 15px;
 `;
@@ -50,7 +48,7 @@ const MainDiv = styled.div`
   flex: 1;
   height: 100vh;
   overflow: auto;
-  padding: 0px 15px;
+  padding: 0px 30px;
   background-color: ghostwhite;
 `;
 const SideBarText = styled.div`
@@ -141,6 +139,12 @@ function App() {
         <Sidebar>
           <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
             <h2>Skelly 💀</h2>
+            <div style={{fontSize: "13px", textAlign: "center", color: "red"}}>
+              WARNING: Product in beta. Use at your own risk.
+            </div>
+            <div style={{marginBottom: "20px", fontSize: "13px", textAlign: "center"}}>
+              Bare bones NFT marketplace. Trade directly with FTM. 1% fees & no custody of FTM or NFTs.
+            </div>
             <SideBarText>
               <a href="#/">Browse</a>
             </SideBarText>
