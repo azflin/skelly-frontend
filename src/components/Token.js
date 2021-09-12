@@ -547,7 +547,7 @@ export default function Token({ provider, signer }) {
           >
             Owned by&nbsp;
             <a
-              href={NETWORK.block_explorer_url + "address/" + { owner }}
+              href={NETWORK.block_explorer_url + "address/" + owner}
               target="_blank"
             >
               {owner}
@@ -675,7 +675,7 @@ export default function Token({ provider, signer }) {
         </div>
       </div>
       {/* NFT Metadata */}
-      <BorderedDiv style={{maxWidth: "1000px", flexDirection: "column", display: "inline-block", padding: "20px"}}>
+      <BorderedDiv style={{maxWidth: "1000px", flexDirection: "column", display: "inline-block", padding: "20px", overflow: "scroll"}}>
         <div style={{fontSize: "22px", fontWeight: 600}}>Metadata</div>
         {metadata &&
           Object.keys(metadata).map((key) => {

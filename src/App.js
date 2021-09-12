@@ -27,6 +27,30 @@ const COLLECTIONS = [
     name: "Shiba Punks",
     address: "0x28908d5795b4d8f4cc175c63523f974412f2a5b1",
   },
+  {
+    name: "Fantom Rock",
+    address: "0xc5fa69f0d478923af8c798cd770f2eed4e40eb99"
+  },
+  {
+    name: "BitUman",
+    address: "0x8c2fcd5d857ee9aa19d1a27ae81ab1129385e3ac"
+  },
+  {
+    name: "Fantom Paper",
+    address: "0x3192f48983a52450db53e9671ec409e4d6b6d622"
+  },
+  {
+    name: "Fantom Waifus",
+    address: "0x92d822978872f12a5d381bd7089461e7ad3634bc"
+  },
+  {
+    name: "Gantom Stone",
+    address: "0x3d7071e5647251035271aeb780d832b381fa730f"
+  },
+  {
+    name: "Fantom Mooncats",
+    address: "0xb3629177f46686106c8b83d03613041d805ccdcd"
+  }
   // {
   //   name: "Joker",
   //   address: "0x29b946156614e8F7710C8F90eC69A7d61303754a"

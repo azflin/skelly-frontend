@@ -28,9 +28,11 @@ export default function Wallet() {
   return (
     <div>
       <h1>
-        {address.slice(0, 6) +
+        <a href={NETWORK.block_explorer_url + "address/" + address} target="_blank">
+          {address.slice(0, 6) +
           "..." +
           address.slice(address.length - 4, address.length)}
+        </a>
         's NFTs
       </h1>
       <div>
