@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import BrowseForm from "./BrowseForm";
-import {API_URL, NETWORK} from "../config";
-import { Link } from "react-router-dom";
+import {API_URL} from "../config";
+import MarketplaceActivityTable from "./MarketplaceActivityTable";
 
 export default function Browse() {
 
@@ -26,41 +26,9 @@ export default function Browse() {
       <h1>Browse</h1>
       <BrowseForm></BrowseForm>
       <div>
-        <div style={{fontSize: "18px", fontWeight: "600", marginBottom: "15px"}}>
-          Recent Activity
-        </div>
-        <table style={{borderSpacing: "5px"}}>
-          <thead>
-            <tr>
-              <th>ERC721 Contract</th>
-              <th>Token ID</th>
-              <th>Bid</th>
-              <th>Offer</th>
-              <th>Updated At</th>
-              <th>View</th>
-            </tr>
-          </thead>
-          <tbody>
-          {collectionsData.length && collectionsData.map((x) =>
-            <tr key={x._id}>
-              <td>
-                <a href={NETWORK.block_explorer_url + "address/" + x.contractAddress} target="_blank">
-                  {x.contractAddress}
-                </a>
-              </td>
-              <td>{x.tokenId}</td>
-              <td>{x.bidPrice}</td>
-              <td>{x.offerPrice}</td>
-              <td>{x.updatedAt}</td>
-              <td>
-                <Link to={`/collection/${x.contractAddress}/${x.tokenId}`}>
-                  <button>Go</button>
-                </Link>
-              </td>
-            </tr>
-          )}
-          </tbody>
-        </table>
+        {collectionsData &&
+          <MarketplaceActivityTable marketplaceActivity={collectionsData}></MarketplaceActivityTable>
+        }
       </div>
     </div>
   );
