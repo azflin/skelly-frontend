@@ -11,30 +11,30 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import { NETWORK } from "./config";
 
 const COLLECTIONS = [
-  // {
-  //   name: "Baby Boo",
-  //   address: "0xf6a4dc2c70e45a43c85151c4afa89f3ea9c463fd",
-  // },
-  // {
-  //   name: "Fantums",
-  //   address: "0x0c600d41b9c7656e60c0bf76d79b1532b4770d0c",
-  // },
-  // {
-  //   name: "Strange Brew",
-  //   address: "0x9044948e1a934340766c16f094cc32205d60d1b2",
-  // },
-  // {
-  //   name: "Shiba Punks",
-  //   address: "0x28908d5795b4d8f4cc175c63523f974412f2a5b1",
-  // },
   {
-    name: "Joker",
-    address: "0x29b946156614e8F7710C8F90eC69A7d61303754a"
+    name: "Baby Boo",
+    address: "0xf6a4dc2c70e45a43c85151c4afa89f3ea9c463fd",
   },
   {
-    name: "Rick and Morty",
-    address: "0x7eB14bAbd0D84497Bb4CC32ff2C99df8C2569F12"
-  }
+    name: "Fantums",
+    address: "0x0c600d41b9c7656e60c0bf76d79b1532b4770d0c",
+  },
+  {
+    name: "Strange Brew",
+    address: "0x9044948e1a934340766c16f094cc32205d60d1b2",
+  },
+  {
+    name: "Shiba Punks",
+    address: "0x28908d5795b4d8f4cc175c63523f974412f2a5b1",
+  },
+  // {
+  //   name: "Joker",
+  //   address: "0x29b946156614e8F7710C8F90eC69A7d61303754a"
+  // },
+  // {
+  //   name: "Rick and Morty",
+  //   address: "0x7eB14bAbd0D84497Bb4CC32ff2C99df8C2569F12"
+  // }
 ];
 const SidebarDiv = styled.div`
   width: 220px;
