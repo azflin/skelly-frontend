@@ -5,6 +5,7 @@ import Browse from "./components/Browse";
 import Wallet from "./components/Wallet";
 import Token from "./components/Token";
 import Collection from "./components/Collection";
+import About from "./components/About";
 import { ethers } from "ethers";
 import styled from "styled-components";
 import detectEthereumProvider from "@metamask/detect-provider";
@@ -181,6 +182,20 @@ function App() {
                 <a href={"#/collection/" + x.address}>{x.name}</a>
               </SideBarText>
             ))}
+            <div style={{
+              position: "absolute",
+              bottom: "20px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
+            }}>
+              <div style={{fontSize: "18px", marginBottom: "10px"}}>
+                <a href='#/about'>About</a>
+              </div>
+              <a href="https://twitter.com/skellyftm" target="_blank">
+                <i className="fa fa-lg fa-twitter"></i>
+              </a>
+            </div>
           </div>
         </Sidebar>
         <Main>
@@ -213,6 +228,9 @@ function App() {
                 </Route>
                 <Route path="/collection/:contract">
                   {ready && <Collection provider={provider}></Collection>}
+                </Route>
+                <Route path="/about">
+                  {ready && <About></About>}
                 </Route>
               </Switch>
             </>

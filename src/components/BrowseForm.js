@@ -6,6 +6,7 @@ export default function BrowseForm() {
   const [wallet, setWallet] = useState("");
   const [contract, setContract] = useState("");
   const [tokenId, setTokenId] = useState("");
+  const [specificCollectionContract, setSpecificCollectionContract] = useState("");
 
   return (
     <BorderedDiv style={{flexDirection: "column", display: "inline-block"}}>
@@ -23,7 +24,7 @@ export default function BrowseForm() {
         </Link>
       </form>
       <form>
-        <div style={{fontSize: "18px", fontWeight: "650"}}>Search NFT:</div>
+        <div style={{fontSize: "18px", fontWeight: "650"}}>Search Specific NFT:</div>
         <label style={{marginRight: "15px"}}>
           ERC721 Contract:&nbsp;
           <input
@@ -41,6 +42,20 @@ export default function BrowseForm() {
           />
         </label>
         <Link to={"/collection/" + contract + "/" + tokenId}>
+          <button style={{marginLeft: "10px"}}>Go</button>
+        </Link>
+      </form>
+      <form style={{marginTop: "10px"}}>
+        <div style={{fontSize: "18px", fontWeight: "650"}}>Go to Collection:</div>
+        <label style={{marginRight: "15px"}}>
+          ERC721 Contract:&nbsp;
+          <input
+            type="text"
+            value={specificCollectionContract}
+            onChange={(e) => setSpecificCollectionContract(e.target.value)}
+          />
+        </label>
+        <Link to={"/collection/" + specificCollectionContract}>
           <button style={{marginLeft: "10px"}}>Go</button>
         </Link>
       </form>

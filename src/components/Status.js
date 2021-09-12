@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import {MARKETPLACE_CONTRACT, NETWORK} from "../config";
 
 const StatusDiv = styled.div`
   position: fixed;
