@@ -10,10 +10,15 @@ export default function About() {
         <p>
           Skelly is a bare bones NFT marketplace on Fantom. Trade ERC721s using FTM &
           WFTM (for bidding). Unlike OpenSea, Skelly does not use signatures and all
-          offers and bids are simply stored on the blockchain in a smart contract. Only
-          one bid can exist on an NFT at a time. Skelly does not take custody of any FTM or
-          NFTs, and the transfer occurs upon transaction execution. Skelly takes a 1% fee off
-          all transactions.
+          offers and bids are simply stored on the blockchain in a smart contract. Skelly does
+          not take custody of any FTM or NFTs, and the transfer occurs upon transaction
+          execution. Skelly takes a 1% fee off all transactions. There are no expiries
+          on bids or offers.
+        </p>
+        <p>
+          <b>Bidding:</b> Bidding is done in WFTM (this is the only way the contract
+          can transfer funds out of your account when the seller accepts your bid). You'll
+          have to approve the Marketplace contract to have allowance for your WFTM.
         </p>
         <p>
           The API used to retrieve NFTs in wallets and to retrieve NFTs of a collection
