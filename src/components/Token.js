@@ -75,6 +75,7 @@ export default function Token({ provider, signer }) {
   const [offer, setOffer] = useState();
   const [userApprovedNftTransfer, setUserApprovedNftTransfer] = useState();
   const [userApprovedWeth, setUserApprovedWeth] = useState();
+  const [failTokenUriLoad, setFailTokenUriLoad] = useState();
 
   // Fetch ERC721 contract details and tokenURI json when collectionAddress or tokenID
   // change
@@ -105,14 +106,19 @@ export default function Token({ provider, signer }) {
       if (!uri.startsWith("http")) {
         uri = "https://gateway.ipfs.io/ipfs/" + uri;
       }
-      let response = await fetch(uri);
+      let response;
+      try {
+        response = await fetch(uri);
+      } catch (error) {
+        setFailTokenUriLoad(true);
+        return;
+      }
       if (response.ok) {
         let data = await response.json();
         setMetadata(data);
       } else {
-        console.log("HTTP-Error: " + response.status);
+        setFailTokenUriLoad(true);
       }
-      // refreshBidAsk();
     }
     fetchAPI();
   }, [collectionAddress, tokenId]);
@@ -530,6 +536,8 @@ export default function Token({ provider, signer }) {
               &nbsp;#{tokenId}
             </h1>
           )}
+          {failTokenUriLoad &&
+            <div style={{color: "red", marginBottom: "10px"}}>ERROR: Failed to load token URI.</div>}
           <div
             style={{
               fontSize: "18px",
@@ -675,7 +683,7 @@ export default function Token({ provider, signer }) {
             return (
               <div style={{marginTop: "5px", marginBottom: "5px"}} key={key}>
                 <span style={{fontSize: "18px", fontWeight: 600}}>{key}:</span>
-                {key === "attributes" ?
+                {(key === "attributes"  && Array.isArray(metadata[key])) ?
                   <div>
                     <table style={{marginTop: "10px"}}>
                       <thead>
@@ -685,12 +693,12 @@ export default function Token({ provider, signer }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {/*{metadata[key].map((x) =>*/}
-                        {/*  <tr>*/}
-                        {/*    <td>{x.trait_type}</td>*/}
-                        {/*    <td>{x.value}</td>*/}
-                        {/*  </tr>*/}
-                        {/*)}*/}
+                        {metadata[key].map((x) =>
+                          <tr>
+                            <td>{x.trait_type}</td>
+                            <td>{x.value}</td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>

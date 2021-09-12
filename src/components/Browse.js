@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import BrowseForm from "./BrowseForm";
-import {API_URL} from "../config";
+import {API_URL, NETWORK} from "../config";
 import { Link } from "react-router-dom";
 
 export default function Browse() {
@@ -43,7 +43,11 @@ export default function Browse() {
           <tbody>
           {collectionsData.length && collectionsData.map((x) =>
             <tr key={x._id}>
-              <td>{x.contractAddress}</td>
+              <td>
+                <a href={NETWORK.block_explorer_url + "address/" + x.contractAddress} target="_blank">
+                  {x.contractAddress}
+                </a>
+              </td>
               <td>{x.tokenId}</td>
               <td>{x.bidPrice}</td>
               <td>{x.offerPrice}</td>
