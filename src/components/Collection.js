@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import {ethers} from "ethers";
 import collectionABI from "../abis/collectionABI";
 import {NETWORK} from "../config";
+import MarketplaceActivityTable from "./MarketplaceActivityTable";
+import CollectionForm from "./CollectionForm";
 
 export default function Collection({provider}) {
   const { contract } = useParams();
@@ -13,6 +15,7 @@ export default function Collection({provider}) {
   useEffect(() => {
     async function fetchCollection() {
       setNfts(null);
+      setCollectionActivity(null);
 
       let collectionContract = await new ethers.Contract(
         contract,
@@ -44,49 +47,10 @@ export default function Collection({provider}) {
           {contract}
         </a>
       </h1>
+      <CollectionForm contract={contract}></CollectionForm>
       <div>
-        <div style={{fontSize: "18px", fontWeight: 600}}>
-          Marketplace Activity
-        </div>
-        {collectionActivity && collectionActivity.length
-          ?
-          <table style={{borderSpacing: "5px"}}>
-            <thead>
-            <tr>
-              <th>Token Id</th>
-              <th>Current Bid</th>
-              <th>Buy Now Price</th>
-              <th>Last Updated</th>
-              <th>View</th>
-            </tr>
-            </thead>
-            <tbody>
-            {collectionActivity &&
-            collectionActivity.map((nft) => (
-              <tr key={nft._id}>
-                <td>
-                  {nft.tokenId}
-                </td>
-                <td>{nft.bidPrice}</td>
-                <td>
-                  {nft.offerPrice}
-                </td>
-                <td>
-                  {nft.updatedAt}
-                </td>
-                <td>
-                  <a
-                    href={"#/collection/" + nft.contractAddress + "/" + nft.tokenId}
-                  >
-                    <button>Go</button>
-                  </a>
-                </td>
-              </tr>
-            ))}
-            </tbody>
-          </table>
-          :
-          <div>There is no current marketplace activity for this collection.</div>
+        {collectionActivity &&
+          <MarketplaceActivityTable marketplaceActivity={collectionActivity}></MarketplaceActivityTable>
         }
       </div>
       {/* The collection's NFTs (first 150) */}

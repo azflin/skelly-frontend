@@ -44,7 +44,7 @@ export default function Wallet() {
       </div>
       </div>
       <div style={{fontWeight: "600", fontSize: "18px", marginBottom: "10px", marginTop: "10px"}}>
-        All Wallet's NFTs
+        All Wallet's NFTs (Up to 150)
       </div>
       {nftsLoaded
         ?
