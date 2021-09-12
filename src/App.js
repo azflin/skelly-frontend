@@ -93,6 +93,25 @@ function App() {
   const [wrongChain, setWrongChain] = useState(false);
   const [ready, setReady] = useState();
 
+  // Function to add Fantom network to MetaMask
+  const addFantomToMetamask = async () => {
+    let params = {
+      chainId: '0xFA',
+      chainName: 'Fantom Opera',
+      nativeCurrency: {
+        name: 'Fantom',
+        symbol: 'FTM',
+        decimals: 18
+      },
+      rpcUrls: ['https://rpc.ftm.tools/'],
+      blockExplorerUrls: ['https://ftmscan.com/']
+    }
+    await window.ethereum.request({
+      method: "wallet_addEthereumChain",
+      params: [params]
+    });
+  }
+
   // Function to request metamask connection. This sets signer.
   const connectMetamask = async () => {
     if (provider) {
@@ -200,7 +219,10 @@ function App() {
         </Sidebar>
         <Main>
           {wrongChain ? (
-            <h1>Wrong Chain - switch to FTM 250</h1>
+            <div>
+              <h1>Wrong Chain - switch to FTM 250</h1>
+              <button onClick={addFantomToMetamask}>Add Fantom to MetaMask (or switch to FTM)</button>
+            </div>
           ) : (
             <>
               <div align="right" style={{marginTop: "15px", marginRight: "15px"}}>
