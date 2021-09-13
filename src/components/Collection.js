@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {ethers} from "ethers";
 import collectionABI from "../abis/collectionABI";
-import {NETWORK} from "../config";
+import {NETWORK, API_URL} from "../config";
 import MarketplaceActivityTable from "./MarketplaceActivityTable";
 import CollectionForm from "./CollectionForm";
 
@@ -24,17 +24,15 @@ export default function Collection({provider}) {
       );
       setCollectionName(await collectionContract.name());
 
-      let response = await fetch(
-        `https://api.paintswap.finance/nfts/${contract}?allowNSFW=true&numToFetch=150&numToSkip=0`
-      );
+      let response = await fetch(API_URL + "collections/" + contract);
       let data = await response.json();
-      setNfts(data.nfts);
+      setCollectionActivity(data);
 
       response = await fetch(
-        "https://protected-reaches-27044.herokuapp.com/collections/" + contract);
+        `https://api.paintswap.finance/nfts/${contract}?allowNSFW=true&numToFetch=150&numToSkip=0`
+      );
       data = await response.json();
-      setCollectionActivity(data);
-      console.log(data);
+      setNfts(data.nfts);
     }
     fetchCollection();
   }, [contract]);
