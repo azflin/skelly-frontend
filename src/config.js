@@ -33,4 +33,4 @@ export const NETWORK = {
 export const MARKETPLACE_CONTRACT =
   "0xC437B3FF25930C3A013f34ca178696dAed5265c0";
 export const WETH_CONTRACT = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83";
-export const API_URL = "https://protected-reaches-27044.herokuapp.com/";
+export const API_URL = "https://evening-thicket-41155.herokuapp.com/";
