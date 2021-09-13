@@ -47,8 +47,18 @@ export default function Collection({provider}) {
       </h1>
       <CollectionForm contract={contract}></CollectionForm>
       <div>
-        {collectionActivity &&
+        {collectionActivity ?
           <MarketplaceActivityTable marketplaceActivity={collectionActivity}></MarketplaceActivityTable>
+          :
+          <div>
+            <div>Loading marketplace activity...</div>
+            <div className="lds-ring">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
         }
       </div>
       {/* The collection's NFTs (first 150) */}

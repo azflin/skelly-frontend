@@ -38,8 +38,17 @@ export default function Wallet() {
       </h1>
       <div>
       <div>
-        {nftsWithActivity &&
+        {nftsWithActivity ?
           <MarketplaceActivityTable marketplaceActivity={nftsWithActivity}></MarketplaceActivityTable>
+          :<div>
+            <div>Loading marketplace activity...</div>
+            <div className="lds-ring">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
         }
       </div>
       </div>

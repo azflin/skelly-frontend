@@ -26,8 +26,17 @@ export default function Browse() {
       <h1>Browse</h1>
       <BrowseForm></BrowseForm>
       <div>
-        {collectionsData &&
+        {collectionsData ?
           <MarketplaceActivityTable marketplaceActivity={collectionsData}></MarketplaceActivityTable>
+          : <div>
+            <div>Loading marketplace activity...</div>
+            <div className="lds-ring">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
         }
       </div>
     </div>
