@@ -58,6 +58,10 @@ const BorderedDiv = styled.div`
   margin-bottom: 10px;
 `;
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default function Token({ provider, signer }) {
   const { collectionAddress, tokenId } = useParams();
 
@@ -273,8 +277,11 @@ export default function Token({ provider, signer }) {
   };
 
   const refreshBidAsk = async () => {
+    await sleep(2000);
     let offer = await marketplaceContract.offers(collectionAddress, tokenId);
+    console.log("refreshBidAsk offer:", offer);
     let bid = await marketplaceContract.bids(collectionAddress, tokenId);
+    console.log("refreshBidAsk bid:", bid);
     setOffer({
       price: parseFloat(ethers.utils.formatEther(offer.price)),
       seller: offer.seller,
@@ -707,7 +714,7 @@ export default function Token({ provider, signer }) {
                       </thead>
                       <tbody>
                         {metadata[key].map((x) =>
-                          <tr>
+                          <tr key={x.trait_type}>
                             <td>{x.trait_type}</td>
                             <td>{x.value}</td>
                           </tr>
