@@ -1,2 +1,2 @@
-# NFT Marketplace Frontend
+# Skelly NFT Marketplace Frontend
 A React frontend for https://www.skellynft.com/#/.
